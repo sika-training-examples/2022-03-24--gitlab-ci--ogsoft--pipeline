@@ -57,6 +57,9 @@ deploy_dev:frontend:
 stop_dev:frontend:
   when: manual
   stage: deploy_dev
+  variables:
+    GIT_STRATEGY: none
+  allow_failure: false
   script:
     - helm uninstall frontend-$CI_COMMIT_REF_SLUG
   environment:
