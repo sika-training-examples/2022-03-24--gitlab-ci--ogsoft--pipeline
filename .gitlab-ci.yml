@@ -11,21 +11,24 @@ variables:
   HOST_FRONTEND: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$KUBE_INGRESS_BASE_DOMAIN
   GIT_CLEAN_FLAGS: -ffdx -e node_modules -e .yarn-cache
 
-frontend:prettier:
+.frontend_static_analysis: &frontend_static_analysis
   stage: static_analysis
   image: node:17
   script:
     - cd frontend
     - yarn --cache-folder .yarn-cache
-    - yarn --cache-folder .yarn-cache run prettier-check
+    - yarn --cache-folder .yarn-cache run $CMD
+
+frontend:prettier:
+  <<: *frontend_static_analysis
+  variables:
+    CMD: prettier-write
+
 
 frontend:lint:
-  stage: static_analysis
-  image: node:17
-  script:
-    - cd frontend
-    - yarn --cache-folder .yarn-cache
-    - yarn --cache-folder .yarn-cache run lint
+  <<: *frontend_static_analysis
+  variables:
+    CMD: lint
 
 build:frontend:
   stage: build
