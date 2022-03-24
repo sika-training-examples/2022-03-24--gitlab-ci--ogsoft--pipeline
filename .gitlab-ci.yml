@@ -1,6 +1,7 @@
 image: sikalabs/ci
 
 stages:
+  - static_analysis
   - build
   - deploy_dev
 
@@ -8,6 +9,16 @@ variables:
   IMAGE_FRONTEND_LATEST: $CI_REGISTRY_IMAGE/frontend
   IMAGE_FRONTEND: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA-$CI_PIPELINE_ID
   HOST_FRONTEND: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$KUBE_INGRESS_BASE_DOMAIN
+
+frontend:prettier:
+  stage: static_analysis
+  image: node:17
+  variables:
+    GIT_CLEAN_FLAGS: -ffdx -e node_modules -e .yarn-cache
+  script:
+    - cd frontend
+    - yarn --cache-folder .yarn-cache
+    - yarn --cache-folder .yarn-cache run prettier-check
 
 build:frontend:
   stage: build
