@@ -8,8 +8,8 @@ export default function Home() {
         <title>Hello OG Soft!</title>
       </Head>
       <h1>
-        💩💩💩Hello <span style={{ color: "orange" }}>O</span>
-        <span style={{ color: "green" }}>G</span> Soft!💩💩💩
+        💩💩💩🦄🦄🦄Hello <span style={{ color: "orange" }}>O</span>
+        <span style={{ color: "green" }}>G</span> Soft!🦄🦄🦄💩💩💩
       </h1>
     </>
   );
