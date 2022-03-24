@@ -7,7 +7,7 @@ export default function Home() {
       <Head>
         <title>Hello OG Soft!</title>
       </Head>
-      <h1>Hello OG Soft!</h1>
+      <h1>Hello <span style={{color:"orange"}}>O</span><span style={{color:"green"}}>G</span> Soft!</h1>
     </>
   );
 }
