@@ -40,6 +40,9 @@ build:frontend:
     - docker build -t $IMAGE_FRONTEND -t $IMAGE_FRONTEND_LATEST .
     - docker push $IMAGE_FRONTEND
     - docker push $IMAGE_FRONTEND_LATEST
+  needs:
+    - frontend:prettier
+    - frontend:lint
 
 build:backend:
   stage: build
@@ -49,6 +52,7 @@ build:backend:
     - docker build -t $IMAGE_BACKEND -t $IMAGE_BACKEND_LATEST .
     - docker push $IMAGE_BACKEND
     - docker push $IMAGE_BACKEND_LATEST
+  needs: []
 
 deploy_dev:frontend:
   stage: deploy_dev
@@ -67,6 +71,8 @@ deploy_dev:frontend:
     kubernetes:
       namespace: default
     on_stop: stop_dev:frontend
+  needs:
+    - build:frontend
 
 stop_dev:frontend:
   when: manual
