@@ -40,7 +40,7 @@ deploy_dev:frontend:
   stage: deploy_dev
   script:
     - helm upgrade --install
-        frontend one-image
+        frontend-$CI_COMMIT_REF_SLUG one-image
         --wait
         --repo https://helm.sikalabs.io
         --set image=$IMAGE_FRONTEND
@@ -58,7 +58,7 @@ stop_dev:frontend:
   when: manual
   stage: deploy_dev
   script:
-    - helm uninstall frontend
+    - helm uninstall frontend-$CI_COMMIT_REF_SLUG
   environment:
     name: dev/frontend/$CI_COMMIT_REF_SLUG
     kubernetes:
