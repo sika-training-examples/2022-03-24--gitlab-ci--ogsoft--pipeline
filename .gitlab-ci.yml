@@ -30,3 +30,15 @@ deploy_dev:frontend:
     url: https://$CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$KUBE_INGRESS_BASE_DOMAIN
     kubernetes:
       namespace: default
+    on_stop: stop_dev:frontend
+
+stop_dev:frontend:
+  when: manual
+  stage: deploy_dev
+  script:
+    - helm uninstall frontend
+  environment:
+    name: dev/frontend/$CI_COMMIT_REF_SLUG
+    kubernetes:
+      namespace: default
+    action: stop
