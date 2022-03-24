@@ -6,6 +6,8 @@ stages:
   - deploy_dev
 
 variables:
+  IMAGE_BACKEND_LATEST: $CI_REGISTRY_IMAGE/backend
+  IMAGE_BACKEND: $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA-$CI_PIPELINE_ID
   IMAGE_FRONTEND_LATEST: $CI_REGISTRY_IMAGE/frontend
   IMAGE_FRONTEND: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA-$CI_PIPELINE_ID
   HOST_FRONTEND: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$KUBE_INGRESS_BASE_DOMAIN
@@ -38,6 +40,15 @@ build:frontend:
     - docker build -t $IMAGE_FRONTEND -t $IMAGE_FRONTEND_LATEST .
     - docker push $IMAGE_FRONTEND
     - docker push $IMAGE_FRONTEND_LATEST
+
+build:backend:
+  stage: build
+  script:
+    - cd backend
+    - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+    - docker build -t $IMAGE_BACKEND -t $IMAGE_BACKEND_LATEST .
+    - docker push $IMAGE_BACKEND
+    - docker push $IMAGE_BACKEND_LATEST
 
 deploy_dev:frontend:
   stage: deploy_dev
