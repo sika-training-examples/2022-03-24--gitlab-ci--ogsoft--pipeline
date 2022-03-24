@@ -11,6 +11,7 @@ variables:
   IMAGE_FRONTEND_LATEST: $CI_REGISTRY_IMAGE/frontend
   IMAGE_FRONTEND: $CI_REGISTRY_IMAGE/frontend:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA-$CI_PIPELINE_ID
   HOST_FRONTEND: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$KUBE_INGRESS_BASE_DOMAIN
+  HOST_BACKEND: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG-api.$KUBE_INGRESS_BASE_DOMAIN
   GIT_CLEAN_FLAGS: -ffdx -e node_modules -e .yarn-cache
 
 .frontend_static_analysis: &frontend_static_analysis
@@ -106,4 +107,46 @@ stop_dev:frontend:
   only:
     changes:
       - "frontend/**/*"
+      - .gitlab-ci.yml
+
+deploy_dev:backend:
+  stage: deploy_dev
+  script:
+    - helm upgrade --install
+        backend-$CI_COMMIT_REF_SLUG one-image
+        --wait
+        --repo https://helm.sikalabs.io
+        --set image=$IMAGE_BACKEND
+        --set host=$HOST_BACKEND
+        --set CI_PROJECT_PATH_SLUG=$CI_PROJECT_PATH_SLUG
+        --set CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
+  environment:
+    name: dev/backend/$CI_COMMIT_REF_SLUG
+    url: https://$CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG-api.$KUBE_INGRESS_BASE_DOMAIN
+    kubernetes:
+      namespace: default
+    on_stop: stop_dev:backend
+  needs:
+    - build:backend
+  only:
+    changes:
+      - "backend/**/*"
+      - .gitlab-ci.yml
+
+stop_dev:backend:
+  when: manual
+  stage: deploy_dev
+  variables:
+    GIT_STRATEGY: none
+  allow_failure: false
+  script:
+    - helm uninstall backend-$CI_COMMIT_REF_SLUG
+  environment:
+    name: dev/backend/$CI_COMMIT_REF_SLUG
+    kubernetes:
+      namespace: default
+    action: stop
+  only:
+    changes:
+      - "backend/**/*"
       - .gitlab-ci.yml
