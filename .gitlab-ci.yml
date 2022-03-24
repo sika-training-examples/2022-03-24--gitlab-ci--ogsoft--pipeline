@@ -20,6 +20,16 @@ frontend:prettier:
     - yarn --cache-folder .yarn-cache
     - yarn --cache-folder .yarn-cache run prettier-check
 
+frontend:lint:
+  stage: static_analysis
+  image: node:17
+  variables:
+    GIT_CLEAN_FLAGS: -ffdx -e node_modules -e .yarn-cache
+  script:
+    - cd frontend
+    - yarn --cache-folder .yarn-cache
+    - yarn --cache-folder .yarn-cache run lint
+
 build:frontend:
   stage: build
   script:
