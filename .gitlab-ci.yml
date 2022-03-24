@@ -16,6 +16,10 @@ variables:
 .frontend_static_analysis: &frontend_static_analysis
   stage: static_analysis
   image: node:17
+  only:
+    changes:
+      - "frontend/**/*"
+      - .gitlab-ci.yml
   script:
     - cd frontend
     - yarn --cache-folder .yarn-cache
@@ -43,6 +47,10 @@ build:frontend:
   needs:
     - frontend:prettier
     - frontend:lint
+  only:
+    changes:
+      - .gitlab-ci.yml
+      - "frontend/**/*"
 
 build:backend:
   stage: build
@@ -53,6 +61,10 @@ build:backend:
     - docker push $IMAGE_BACKEND
     - docker push $IMAGE_BACKEND_LATEST
   needs: []
+  only:
+    changes:
+      - "backend/**/*"
+      - .gitlab-ci.yml
 
 deploy_dev:frontend:
   stage: deploy_dev
@@ -73,6 +85,10 @@ deploy_dev:frontend:
     on_stop: stop_dev:frontend
   needs:
     - build:frontend
+  only:
+    changes:
+      - "frontend/**/*"
+      - .gitlab-ci.yml
 
 stop_dev:frontend:
   when: manual
@@ -87,3 +103,7 @@ stop_dev:frontend:
     kubernetes:
       namespace: default
     action: stop
+  only:
+    changes:
+      - "frontend/**/*"
+      - .gitlab-ci.yml
