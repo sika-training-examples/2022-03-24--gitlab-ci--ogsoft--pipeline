@@ -67,6 +67,27 @@ build:backend:
       - "backend/**/*"
       - .gitlab-ci.yml
 
+build:backend-bin:
+  stage: build
+  image: golang:1.17
+  parallel:
+    matrix:
+      - GOOS:
+        - windows
+        - linux
+        - darwin
+      - GOARCH:
+        - amd64
+        - arm64
+  script:
+    - cd backend
+    - go build
+  artifacts:
+    paths:
+      - backend/backend
+      - backend/backend.exe
+  needs: []
+
 deploy_dev:frontend:
   stage: deploy_dev
   script:
