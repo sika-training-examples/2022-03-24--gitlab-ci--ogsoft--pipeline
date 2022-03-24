@@ -25,6 +25,8 @@ deploy_dev:frontend:
         --repo https://helm.sikalabs.io
         --set image=$IMAGE_FRONTEND
         --set host=$HOST_FRONTEND
+        --set CI_PROJECT_PATH_SLUG=$CI_PROJECT_PATH_SLUG
+        --set CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
   environment:
     name: dev/frontend/$CI_COMMIT_REF_SLUG
     url: https://$CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$KUBE_INGRESS_BASE_DOMAIN
