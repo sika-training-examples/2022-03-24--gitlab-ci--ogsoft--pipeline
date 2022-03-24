@@ -2,9 +2,11 @@ image: sikalabs/ci
 
 stages:
   - build
+  - deploy_dev
 
 variables:
   IMAGE_FRONTEND: $CI_REGISTRY_IMAGE/frontend
+  HOST_FRONTEND: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$KUBE_INGRESS_BASE_DOMAIN
 
 build:frontend:
   stage: build
@@ -13,3 +15,18 @@ build:frontend:
     - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
     - docker build -t $IMAGE_FRONTEND .
     - docker push $IMAGE_FRONTEND
+
+deploy_dev:frontend:
+  stage: deploy_dev
+  script:
+    - helm upgrade --install
+        frontend one-image
+        --wait
+        --repo https://helm.sikalabs.io
+        --set image=$IMAGE_FRONTEND
+        --set host=$HOST_FRONTEND
+  environment:
+    name: dev/frontend/$CI_COMMIT_REF_SLUG
+    url: https://$CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$KUBE_INGRESS_BASE_DOMAIN
+    kubernetes:
+      namespace: default
